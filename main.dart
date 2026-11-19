@@ -33,11 +33,17 @@ class QuestionItem {
   const QuestionItem({required this.q, required this.a, required this.s});
 }
 
-// قاعدة بيانات المجموعات والمراحل (10 مراحل في كل مجموعة، 3 أسئلة لكل مرحلة)
-final List> gameGroups = [
-  {
-    'title': 'المجموعة الأولى: المعرفة العامة',
-    'stages': [
+class GameGroup {
+  final String title;
+  final List<List<QuestionItem>> stages;
+
+  const GameGroup({required this.title, required this.stages});
+}
+
+final List<GameGroup> gameGroups = [
+  GameGroup(
+    title: 'المجموعة الأولى: المعرفة العامة',
+    stages: [
       [
         const QuestionItem(q: 'العضو المسؤول عن ضخ الدم في الجسم', a: 'القلب', s: ['ال', 'قل', 'ب']),
         const QuestionItem(q: 'شركة سيارات يابانية تنتج سيارة كامري', a: 'تويوتا', s: ['تو', 'يو', 'تا']),
@@ -88,11 +94,11 @@ final List> gameGroups = [
         const QuestionItem(q: 'عاصمة فرنسا', a: 'باريس', s: ['با', 'ري', 'س']),
         const QuestionItem(q: 'أسرع طائر في العالم', a: 'الشاهين', s: ['الشا', 'هي', 'ن']),
       ],
-    ]
-  },
-  {
-    'title': 'المجموعة الثانية: التاريخ والحضارات',
-    'stages': List.generate(
+    ],
+  ),
+  GameGroup(
+    title: 'المجموعة الثانية: التاريخ والحضارات',
+    stages: List.generate(
       10,
       (index) => [
         const QuestionItem(q: 'الحضارة التي بنت الأهرامات', a: 'الفرعونية', s: ['الفر', 'عو', 'نية']),
@@ -100,10 +106,10 @@ final List> gameGroups = [
         const QuestionItem(q: 'أول عاصمة للدولة الإسلامية', a: 'المدينة المنورة', s: ['المدي', 'نة', 'المنورة']),
       ],
     ),
-  },
-  {
-    'title': 'المجموعة الثالثة: العلوم والفضاء',
-    'stages': List.generate(
+  ),
+  GameGroup(
+    title: 'المجموعة الثالثة: العلوم والفضاء',
+    stages: List.generate(
       10,
       (index) => [
         const QuestionItem(q: 'المجرة التي يقع فيها كوكب الأرض', a: 'درب التبانة', s: ['درب', 'الت', 'بانة']),
@@ -111,10 +117,9 @@ final List> gameGroups = [
         const QuestionItem(q: 'أقرب نجم إلى كوكب الأرض', a: 'الشمس', s: ['ال', 'شم', 'س']),
       ],
     ),
-  },
+  ),
 ];
 
-// متغيرات حالة اللعبة العامة
 int userCoins = 1000;
 Map<String, bool> completedStages = {};
 
@@ -164,7 +169,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
         itemCount: gameGroups.length,
         itemBuilder: (context, groupIndex) {
           final group = gameGroups[groupIndex];
-          final stages = group['stages'] as List<List<QuestionItem>>;
+          final stages = group.stages;
 
           return Card(
             color: const Color(0xFF161B22),
@@ -182,7 +187,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        group['title'],
+                        group.title,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -338,7 +343,6 @@ class _StagePlayScreenState extends State<StagePlayScreen> {
 
     setState(() {
       userCoins -= 25;
-      // إعادة ضبط الإدخال الخاطئ إن وجد
       selectedSegments.clear();
       usedIndices.clear();
       final firstCorrect = targetSegments[0];
@@ -402,7 +406,6 @@ class _StagePlayScreenState extends State<StagePlayScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // مؤشر الأسئلة الثلاثة للمرحلة
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(widget.questions.length, (idx) {
@@ -418,7 +421,6 @@ class _StagePlayScreenState extends State<StagePlayScreen> {
               }),
             ),
             const SizedBox(height: 30),
-            // بطاقة اللغز
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(24),
@@ -434,7 +436,6 @@ class _StagePlayScreenState extends State<StagePlayScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            // مربع الإجابة في المنتصف
             Center(
               child: Container(
                 constraints: const BoxConstraints(minWidth: 220, minHeight: 58),
@@ -456,7 +457,6 @@ class _StagePlayScreenState extends State<StagePlayScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            // أزرار المسح والتلميح
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -479,7 +479,6 @@ class _StagePlayScreenState extends State<StagePlayScreen> {
               ],
             ),
             const Spacer(),
-            // أزرار المقاطع الصوتية / الكلمات
             Wrap(
               spacing: 12,
               runSpacing: 12,
