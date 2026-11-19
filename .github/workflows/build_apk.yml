@@ -11,6 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -18,15 +24,16 @@ jobs:
 
       - name: Create Flutter Project & Apply Game Code
         run: |
-          flutter create shifra_app
+          flutter create --org com.balokigamer --project-name shifra_app shifra_app
+          rm -rf shifra_app/test
           cp main.dart shifra_app/lib/main.dart
 
       - name: Build APK
         working-directory: ./shifra_app
-        run: flutter build apk --release
+        run: flutter build apk --debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: shifra-release-apk
-          path: shifra_app/build/app/outputs/flutter-apk/app-release.apk
+          name: shifra-game-apk
+          path: shifra_app/build/app/outputs/flutter-apk/app-debug.apk
